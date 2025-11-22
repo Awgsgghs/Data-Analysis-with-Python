@@ -44,5 +44,5 @@ def additive_attention(decoder_hidden_state, encoder_hidden_states, v_add, W_add
     tang=np.tanh(np.dot(W_add_dec, decoder_hidden_state)+np.dot(W_add_enc, encoder_hidden_states))
     v=np.dot(v_add.T, tang)
     softic=softmax(v)
-    attention_vector=softic.dot(encoder_hidden_states_complex.T).T
+    attention_vector=softic.dot(encoder_hidden_states.T).T
     return attention_vector
