@@ -10,9 +10,11 @@ def encoder_block(in_channels, out_channels, kernel_size, padding):
     kernel_size, padding — параметры conv слоев внутри блока
     '''
     block = nn.Sequential(
-        #ВАШ КОД ЗДЕСЬ
+        nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding),
+        nn.BatchNorm2d(out_channels),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=kernel_size, stride=2, padding=padding)
     )
-
     return block
 
 def decoder_block(in_channels, out_channels, kernel_size, padding):
@@ -22,7 +24,9 @@ def decoder_block(in_channels, out_channels, kernel_size, padding):
     kernel_size, padding — параметры conv слоев внутри блока
     '''
     block = nn.Sequential(
-        #ВАШ КОД ЗДЕСЬ
+        nn.ConvTranspose2d(in_channels = in_channels, out_channels=out_channels, kernel_size=kernel_size, stride=2, padding=padding, output_padding=1),
+        nn.BatchNorm2d(out_channels),
+        nn.ReLU(),
     )
 
     return block
@@ -35,13 +39,22 @@ class Autoencoder(nn.Module):
         # добавьте несколько слоев encoder block
         # это блоки-составляющие энкодер-части сети
         self.encoder = nn.Sequential(
-            #ВАШ КОД ЗДЕСЬ
+            encoder_block(3, 32, 3, 1),
+            encoder_block(32, 64, 3, 1),
+            encoder_block(64, 128, 3, 1),
+            encoder_block(128, 256, 3, 1),
+            encoder_block(256, 512, 3, 1)
         )
 
         # добавьте несколько слоев decoder block
         # это блоки-составляющие декодер-части сети
         self.decoder = nn.Sequential(
-            #ВАШ КОД ЗДЕСЬ
+            decoder_block(512,256,3,1),
+            decoder_block(256,128,3,1),
+            decoder_block(128,64,3,1),
+            decoder_block(64,32,3,1),
+            decoder_block(32,3,3,1),
+            nn.Sigmoid()
         )
 
     def forward(self, x):
